@@ -1,0 +1,91 @@
+﻿@model Authority.Server.Models.Requests.CertificateCreateRequest
+@{
+    ViewBag.Title = "New certificate request";
+    Layout = "_Layout";
+}
+
+<h2>New certificate request</h2>
+
+@if (string.IsNullOrWhiteSpace(Model.Authority))
+{
+    foreach (var ca in Model.Authorities)
+    {
+        <div>
+            <div>@Html.ActionLink(ca, "New", new { ca })</div>
+        </div>
+    }
+}
+else
+{
+    using (Html.BeginForm(FormMethod.Post))
+    {
+        <div asp-validation-summary="All"></div>
+        <div>
+            <div class="row">
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Authority)
+                    @Html.TextBoxFor(x => x.Authority, new { @class = "form-control", @readonly = true })
+                </div>
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Id)
+                    @Html.TextBoxFor(x => x.Id, new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Country)
+                    @Html.TextBoxFor(x => x.Country, new { @class = "form-control", placeholder = "RU" })
+                    @Html.ValidationMessageFor(x => x.Country)
+                </div>
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.State)
+                    @Html.TextBoxFor(x => x.State, new { @class = "form-control", placeholder = "SFD" })
+                    @Html.ValidationMessageFor(x => x.State)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Locality)
+                    @Html.TextBoxFor(x => x.Locality, new { @class = "form-control", placeholder = "Rostov-on-Don" })
+                    @Html.ValidationMessageFor(x => x.Locality)
+                </div>
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Organization)
+                    @Html.TextBoxFor(x => x.Organization, new { @class = "form-control", placeholder = "Acme corp." })
+                    @Html.ValidationMessageFor(x => x.Organization)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Department)
+                    @Html.TextBoxFor(x => x.Department, new { @class = "form-control", placeholder = "Information Technology" })
+                    @Html.ValidationMessageFor(x => x.Department)
+                </div>
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.CommonName)
+                    @Html.TextBoxFor(x => x.CommonName, new { @class = "form-control", placeholder = "acme.com" })
+                    @Html.ValidationMessageFor(x => x.CommonName)
+                </div>
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Email)
+                    @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "somebody@acme.com" })
+                    @Html.ValidationMessageFor(x => x.Email)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.San)
+                    @Html.TextAreaFor(x => x.San, new { @class = "form-control", placeholder = "DNS:*.acme.com\r\nDNS:foo.acme.com" })
+                    <small class="form-text text-muted">Subject alternative name</small>
+                </div>
+                <div class="col form-group">
+                    @Html.LabelFor(x => x.Password)
+                    @Html.PasswordFor(x => x.Password, new { @class = "form-control" })
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </div>
+        </div>
+    }
+}
