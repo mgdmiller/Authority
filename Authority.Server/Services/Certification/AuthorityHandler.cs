@@ -42,12 +42,16 @@ namespace Authority.Server.Services.Certification
             var rsa = RSA.Create(2048);
             var generator = X509SignatureGenerator.CreateForRSA(rsa, RSASignaturePadding.Pkcs1);
             var subject = new X500DistinguishedName(subjBuilder.ToString());
+            var keyUsageOids = new OidCollection();
             var csr = new CertificateRequest(
                 subject,
                 rsa,
                 HashAlgorithmName.SHA256,
                 RSASignaturePadding.Pkcs1
             );
+
+            foreach (var s in Manifest.ExtendedUsage) 
+                keyUsageOids.Add(new Oid(s));
 
             foreach (var s in request.San.Split("\r\n"))
                 sanBuilder.AddDnsName(s);
@@ -62,11 +66,7 @@ namespace Authority.Server.Services.Certification
 
             csr.CertificateExtensions.Add(
                 new X509EnhancedKeyUsageExtension(
-                    new OidCollection
-                    {
-                        new("1.3.6.1.5.5.7.3.1"),
-                        new("1.3.6.1.5.5.7.3.2")
-                    },
+                    keyUsageOids,
                     true));
 
             csr.CertificateExtensions.Add(
@@ -96,7 +96,7 @@ namespace Authority.Server.Services.Certification
             var certsStoreDir = Path.Combine(Directory, Manifest.Directories.TryGetValue("certs", DefaultCertsDir));
             var certPrivateKeyFile = Path.Combine(keyStoreDir, $"{id}.key");
             var caCrtFile = Path.Combine(Directory, Manifest.Certificate);
-            var nbf = DateTimeOffset.Now.AddDays(-1);
+            var nbf = DateTimeOffset.Now;
             var expr = DateTimeOffset.Now.AddDays(365);
             var serial = Encoding.UTF8.GetBytes(id.ToString("N"));
             var caCertificate = new X509Certificate2(caCrtFile, password);
